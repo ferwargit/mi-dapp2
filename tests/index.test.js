@@ -33,6 +33,13 @@ describe('Inicialización de la aplicación', () => {
     global.document = dom.window.document;
     global.window = dom.window;
     global.Event = dom.window.Event;
+    
+    // Crear un mock de ethereum que simula la interfaz completa
+    global.window.ethereum = {
+      isMetaMask: true,
+      on: vi.fn(),
+      request: vi.fn().mockResolvedValue(['0x1234'])
+    };
 
     // Guardar el console.error original
     originalConsoleError = console.error;
@@ -113,6 +120,10 @@ describe('Inicialización de la aplicación', () => {
       'Error in DOMContentLoaded listener:', 
       expect.any(Error)
     );
+
+    // Verificar que el mensaje de error sea correcto
+    const errorCall = consoleErrorSpy.mock.calls[0];
+    expect(errorCall[1].message).toBe('Error de inicialización');
 
     // Restaurar console.error
     consoleErrorSpy.mockRestore();
