@@ -13,10 +13,10 @@ export const App = (() => {
       if (this.metamaskService.isMetamaskInstalled()) {
         this.ui.setStatus('Metamask está instalado. Puedes conectarte.');
         this.ui.connectButton.addEventListener('click', () => this.toggleConnection());
-        
+
         // Detectar cambios de cuenta
         window.ethereum.on('accountsChanged', (accounts) => this.handleAccountsChanged(accounts));
-        
+
         // Detectar cambios de red
         window.ethereum.on('chainChanged', (chainId) => this.handleNetworkChanged(chainId));
       } else {
@@ -38,7 +38,7 @@ export const App = (() => {
         const account = await this.metamaskService.connect();
         this.account = account;
         this.ui.setConnectedState(account);
-        
+
         // Obtener información de red y balance después de conectar
         await this.fetchNetworkInfo();
         await this.fetchAccountBalance();
@@ -66,7 +66,7 @@ export const App = (() => {
 
     handleNetworkChanged(chainId) {
       this.fetchNetworkInfo();
-      
+
       // Si hay una cuenta conectada, actualizar su balance cuando cambia la red
       if (this.account) {
         this.fetchAccountBalance();
@@ -79,7 +79,7 @@ export const App = (() => {
       try {
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
         const networkName = this.getNetworkName(chainId);
-        
+
         this.networkInfo = { chainId, networkName };
         this.updateNetworkInfoUI();
       } catch (error) {
@@ -95,7 +95,7 @@ export const App = (() => {
           method: 'eth_getBalance',
           params: [this.account, 'latest']
         });
-        
+
         // Convertir balance de hexadecimal a decimal
         const balanceInEther = parseInt(balance, 16) / Math.pow(10, 18);
         this.updateAccountBalanceUI(balanceInEther.toFixed(4));
@@ -152,9 +152,11 @@ export const App = (() => {
         '0x8274f': 'Scroll Sepolia',
 
       };
-      
+
       return networks[chainId] || `Red Desconocida (${chainId})`;
     }
+
+    
 
     updateNetworkInfoUI() {
       if (!this.networkInfo) return;
@@ -171,6 +173,7 @@ export const App = (() => {
         const networkIdDecimal = parseInt(this.networkInfo.chainId, 16);
         networkIdEl.textContent = `${networkIdDecimal} (${this.networkInfo.chainId})`;
         
+        // Eliminar explícitamente la clase 'hidden'
         networkInfoContainer.classList.remove('hidden');
       }
     }
@@ -184,6 +187,8 @@ export const App = (() => {
       if (accountAddressEl && accountBalanceEl && accountInfoContainer) {
         accountAddressEl.textContent = this.account;
         accountBalanceEl.textContent = `${balance} ETH`;
+        
+        // Eliminar explícitamente la clase 'hidden'
         accountInfoContainer.classList.remove('hidden');
       }
     }
@@ -194,13 +199,17 @@ export const App = (() => {
 
       // Verificar si los elementos existen antes de modificar
       if (networkInfoContainer) {
+        // Añadir explícitamente la clase 'hidden'
         networkInfoContainer.classList.add('hidden');
       }
       
       if (accountInfoContainer) {
+        // Añadir explícitamente la clase 'hidden'
         accountInfoContainer.classList.add('hidden');
       }
     }
+
+    
   }
 
   return App; // Exportamos la clase como parte del módulo

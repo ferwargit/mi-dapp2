@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeAll, afterAll } from 'vitest';
+import { describe, test, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 
 // Importaciones de módulos a mockear
@@ -125,7 +125,8 @@ describe('Inicialización de la aplicación', () => {
     const errorCall = consoleErrorSpy.mock.calls[0];
     expect(errorCall[1].message).toBe('Error de inicialización');
 
-    // Restaurar console.error
+     // Restaurar console.error
     consoleErrorSpy.mockRestore();
+
   });
 });
