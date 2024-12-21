@@ -14,7 +14,7 @@ vi.mock('../src/ui/UIController.js', () => ({
   UIController: vi.fn().mockImplementation(() => ({}))
 }));
 vi.mock('../src/app/App.js', () => ({
-  App: vi.fn().mockImplementation(() => {})
+  App: vi.fn().mockImplementation(() => { })
 }));
 
 describe('Inicialización de la aplicación', () => {
@@ -33,7 +33,7 @@ describe('Inicialización de la aplicación', () => {
     global.document = dom.window.document;
     global.window = dom.window;
     global.Event = dom.window.Event;
-    
+
     // Crear un mock de ethereum que simula la interfaz completa
     global.window.ethereum = {
       isMetaMask: true,
@@ -48,7 +48,7 @@ describe('Inicialización de la aplicación', () => {
   afterAll(() => {
     // Restaurar el console.error original
     console.error = originalConsoleError;
-    
+
     // Limpiar el DOM simulado
     dom.window.close();
   });
@@ -67,7 +67,7 @@ describe('Inicialización de la aplicación', () => {
 
     // Verificar que se registró el event listener para DOMContentLoaded
     expect(addEventListenerSpy).toHaveBeenCalledWith(
-      'DOMContentLoaded', 
+      'DOMContentLoaded',
       expect.any(Function)
     );
 
@@ -94,7 +94,7 @@ describe('Inicialización de la aplicación', () => {
     expect(UIController).toHaveBeenCalledTimes(1);
     expect(App).toHaveBeenCalledTimes(1);
     expect(App).toHaveBeenCalledWith(
-      expect.any(Object), 
+      expect.any(Object),
       expect.any(Object)
     );
   });
@@ -108,16 +108,32 @@ describe('Inicialización de la aplicación', () => {
       throw new Error('Error de inicialización');
     });
 
+    // Simular que UIController y App no lancen errores
+    UIController.mockImplementationOnce(() => ({
+      connectButton: { addEventListener: vi.fn() },
+      setStatus: vi.fn(),
+      status: { textContent: '' }
+    }));
+
+    App.mockImplementationOnce(() => { });
+
     // Importar index.js para disparar el event listener
     await import('../src/index.js');
 
     // Simular el evento DOMContentLoaded
     const event = new Event('DOMContentLoaded');
-    document.dispatchEvent(event);
+
+    // Capturar el error durante el dispatch del evento
+    let caughtError = null;
+    try {
+      document.dispatchEvent(event);
+    } catch (error) {
+      caughtError = error;
+    }
 
     // Verificar que se registró el error
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error in DOMContentLoaded listener:', 
+      'Error in DOMContentLoaded listener:',
       expect.any(Error)
     );
 
@@ -125,8 +141,9 @@ describe('Inicialización de la aplicación', () => {
     const errorCall = consoleErrorSpy.mock.calls[0];
     expect(errorCall[1].message).toBe('Error de inicialización');
 
-     // Restaurar console.error
+    // Restaurar console.error
     consoleErrorSpy.mockRestore();
-
   });
+
+  
 });

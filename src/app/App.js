@@ -1,11 +1,13 @@
+// src/app/App.js
 export const App = (() => {
-  // /src/app/App.js
   class App {
-    constructor(metamaskService, uiController) {
+    constructor(metamaskService, uiController, pollingInterval = 30000) {
       this.metamaskService = metamaskService;
       this.ui = uiController;
       this.account = null;
       this.networkInfo = null;
+      this.balancePollingInterval = null;
+      this.pollingInterval = pollingInterval;  // Añadir esta línea
       this.initialize();
     }
 
@@ -19,11 +21,25 @@ export const App = (() => {
 
         // Detectar cambios de red
         window.ethereum.on('chainChanged', (chainId) => this.handleNetworkChanged(chainId));
+
+        // Implementar polling para actualizar balance
+        this.startBalancePolling();
       } else {
         this.ui.setStatus('Por favor, instala Metamask para usar esta DApp.');
         this.ui.connectButton.disabled = true; // Desactiva el botón si Metamask no está instalado
       }
     }
+
+    startBalancePolling() {
+      this.balancePollingInterval = setInterval(() => {
+        if (this.account) {
+          this.fetchAccountBalance();
+        }
+      }, this.pollingInterval);  // Usar this.pollingInterval
+    }
+
+    // No olvides limpiar el intervalo cuando sea necesario
+
 
     async toggleConnection() {
       if (this.account) {
@@ -48,6 +64,11 @@ export const App = (() => {
     }
 
     disconnect() {
+      // Detener el polling cuando se desconecta
+      if (this.balancePollingInterval) {
+        clearInterval(this.balancePollingInterval);
+      }
+
       this.account = null;
       this.networkInfo = null;
       this.ui.setDisconnectedState();
@@ -156,7 +177,7 @@ export const App = (() => {
       return networks[chainId] || `Red Desconocida (${chainId})`;
     }
 
-    
+
 
     updateNetworkInfoUI() {
       if (!this.networkInfo) return;
@@ -168,11 +189,11 @@ export const App = (() => {
       // Verificar si los elementos existen antes de modificarlos
       if (networkNameEl && networkIdEl && networkInfoContainer) {
         networkNameEl.textContent = this.networkInfo.networkName;
-        
+
         // Convertir el ID de red de hexadecimal a decimal
         const networkIdDecimal = parseInt(this.networkInfo.chainId, 16);
         networkIdEl.textContent = `${networkIdDecimal} (${this.networkInfo.chainId})`;
-        
+
         // Eliminar explícitamente la clase 'hidden'
         networkInfoContainer.classList.remove('hidden');
       }
@@ -187,7 +208,7 @@ export const App = (() => {
       if (accountAddressEl && accountBalanceEl && accountInfoContainer) {
         accountAddressEl.textContent = this.account;
         accountBalanceEl.textContent = `${balance} ETH`;
-        
+
         // Eliminar explícitamente la clase 'hidden'
         accountInfoContainer.classList.remove('hidden');
       }
@@ -202,14 +223,14 @@ export const App = (() => {
         // Añadir explícitamente la clase 'hidden'
         networkInfoContainer.classList.add('hidden');
       }
-      
+
       if (accountInfoContainer) {
         // Añadir explícitamente la clase 'hidden'
         accountInfoContainer.classList.add('hidden');
       }
     }
 
-    
+
   }
 
   return App; // Exportamos la clase como parte del módulo
