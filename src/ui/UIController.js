@@ -1,3 +1,4 @@
+// src/ui/UIController.js
 export const UIController = (() => {
     class UIController {
       constructor() {

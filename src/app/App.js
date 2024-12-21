@@ -1,4 +1,5 @@
 export const App = (() => {
+  // /src/app/App.js
   class App {
     constructor(metamaskService, uiController) {
       this.metamaskService = metamaskService;

@@ -1,3 +1,4 @@
+// src/services/MetamaskService.js
 export const MetamaskService = (() => {
     class MetamaskService {
       constructor() {
