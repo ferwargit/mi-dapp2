@@ -2,11 +2,11 @@ import { MetamaskService } from '../services/MetamaskService.js';
 import { UIController } from '../ui/UIController.js';
 
 export class App {
-    constructor() {
-        this.metamaskService = new MetamaskService();
-        this.ui = new UIController();
-        this.account = null;
-        this.initialize();
+    constructor(metamaskService, uiController) {
+      this.metamaskService = metamaskService;
+      this.ui = uiController;
+      this.account = null;
+      this.initialize();
     }
 
     initialize() {
