@@ -16,7 +16,9 @@ export const UIController = (() => {
         this.connectButton.textContent = 'Desconectar Metamask';
         this.connectButton.classList.remove('bg-blue-500', 'hover:bg-blue-600');
         this.connectButton.classList.add('bg-red-500', 'hover:bg-red-600');
-        this.setStatus(`Conectado: ${account}`);
+        
+        // Limpiar el mensaje de estado cuando la wallet está conectada
+        this.status.textContent = '';
       }
   
       setDisconnectedState() {

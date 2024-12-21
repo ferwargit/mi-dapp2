@@ -10,7 +10,15 @@ describe('App', () => {
 
   beforeEach(() => {
     // Configurar un entorno DOM simulado
-    dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    dom = new JSDOM(`
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div id="networkInfo"></div>
+          <div id="accountInfo"></div>
+        </body>
+      </html>
+    `, {
       url: 'http://localhost',
       runScripts: 'dangerously',
       resources: 'usable'
