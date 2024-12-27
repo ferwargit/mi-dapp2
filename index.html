@@ -4,48 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Configuración de Tailwind
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          backgroundColor: {
+            'dark-primary': '#1a202c',
+            'dark-secondary': '#2d3748'
+          },
+          textColor: {
+            'dark-primary': '#e2e8f0',
+            'dark-secondary': '#cbd5e0'
+          },
+          transitionProperty: {
+            'colors': 'background-color, border-color, color, fill, stroke'
+          }
+        },
+      }
+    }
+  </script>
   <link rel="icon" href="https://via.placeholder.com/32" type="image/png">
   <title>Mi DApp2</title>
+  <!-- Eliminamos el script inicial y lo manejamos todo en uno solo -->
 </head>
-<body class="bg-gray-100 text-gray-800">
+
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
   <div class="container mx-auto p-4">
-    <h1 id="pageTitle" class="text-2xl font-bold text-center mb-4">Conéctate a Metamask</h1>
+    <!-- Botón de modo oscuro con los nuevos colores -->
+    <div class="flex justify-end mb-4">
+      <button id="darkModeToggle"
+        class="bg-gray-200 dark:bg-dark-secondary text-gray-800 dark:text-dark-primary px-3 py-2 rounded transition-colors duration-300">
+        <span id="darkModeIcon">🌓</span> Cambiar Modo
+      </button>
+    </div>
+
+    <!-- Contenido principal con los nuevos colores -->
+    <h1 id="pageTitle" class="text-2xl font-bold text-center mb-4 dark:text-dark-primary">
+      Conéctate a Metamask
+    </h1>
+
     <div class="text-center">
-      <button id="connectButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      <button id="connectButton"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-300">
         Conectar a Metamask
       </button>
     </div>
-    <p id="status" class="text-center mt-4"></p>
-    
-    <!-- Nuevos contenedores para información de red y balance -->
-    <div id="networkInfo" class="mt-6 bg-white shadow-md rounded-lg p-4 hidden">
-      <h2 class="text-xl font-semibold mb-2">Información de Red</h2>
+    <p id="status" class="text-center mt-4 dark:text-dark-secondary"></p>
+
+    <!-- Contenedores con los nuevos colores -->
+    <div id="networkInfo" class="mt-6 bg-white dark:bg-dark-primary shadow-md rounded-lg p-4 hidden">
+      <h2 class="text-xl font-semibold mb-2 dark:text-dark-primary">Información de Red</h2>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <p class="font-medium">Red:</p>
-          <p id="networkName" class="text-gray-600">-</p>
+          <p class="font-medium dark:text-dark-secondary">Red:</p>
+          <p id="networkName" class="text-gray-600 dark:text-dark-secondary">-</p>
         </div>
         <div>
-          <p class="font-medium">ID de Red:</p>
-          <p id="networkId" class="text-gray-600">-</p>
+          <p class="font-medium dark:text-dark-secondary">ID de Red:</p>
+          <p id="networkId" class="text-gray-600 dark:text-dark-secondary">-</p>
         </div>
       </div>
     </div>
 
-    <div id="accountInfo" class="mt-6 bg-white shadow-md rounded-lg p-4 hidden">
-      <h2 class="text-xl font-semibold mb-2">Información de Cuenta</h2>
+    <div id="accountInfo" class="mt-6 bg-white dark:bg-dark-primary shadow-md rounded-lg p-4 hidden">
+      <h2 class="text-xl font-semibold mb-2 dark:text-dark-primary">Información de Cuenta</h2>
       <div class="grid grid-cols-1 gap-4">
         <div>
-          <p class="font-medium">Dirección:</p>
-          <p id="accountAddress" class="text-gray-600 break-words">-</p>
+          <p class="font-medium dark:text-dark-secondary">Dirección:</p>
+          <p id="accountAddress" class="text-gray-600 dark:text-dark-secondary break-words">-</p>
         </div>
         <div>
-          <p class="font-medium">Balance:</p>
-          <p id="accountBalance" class="text-gray-600">-</p>
+          <p class="font-medium dark:text-dark-secondary">Balance:</p>
+          <p id="accountBalance" class="text-gray-600 dark:text-dark-secondary">-</p>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Script de modo oscuro separado y ejecutado antes que el módulo -->
+  <script>
+    // Inicialización inmediata del modo oscuro
+    (function initializeDarkMode() {
+      // Establecer el modo oscuro inicial basado en localStorage
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+
+    // Configuración del modo oscuro después de que el DOM esté listo
+    const darkModeManager = {
+      initialized: false,
+      init() {
+        if (this.initialized) return;
+        
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlElement = document.documentElement;
+        const darkModeIcon = document.getElementById('darkModeIcon');
+
+        // Actualizar la UI inicial
+        const currentMode = localStorage.getItem('darkMode') === 'true';
+        this.updateUI(currentMode);
+
+        // Configurar el evento de click
+        darkModeToggle.addEventListener('click', () => {
+          const isDark = htmlElement.classList.contains('dark');
+          this.toggleDarkMode(!isDark);
+        });
+
+        this.initialized = true;
+      },
+
+      updateUI(isDark) {
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        darkModeIcon.textContent = isDark ? '🌙' : '☀️';
+      },
+
+      toggleDarkMode(isDark) {
+        const htmlElement = document.documentElement;
+        
+        if (isDark) {
+          htmlElement.classList.add('dark');
+          localStorage.setItem('darkMode', 'true');
+        } else {
+          htmlElement.classList.remove('dark');
+          localStorage.setItem('darkMode', 'false');
+        }
+        
+        this.updateUI(isDark);
+      }
+    };
+
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => darkModeManager.init());
+    } else {
+      darkModeManager.init();
+    }
+  </script>
+
   <script type="module" src="./src/index.js"></script>
 </body>
 </html>
